@@ -1,5 +1,7 @@
 [workspace]
 
 members=[
-    "db"
+    "db",
+    "parctice",
+    "mysql_t"
 ]
