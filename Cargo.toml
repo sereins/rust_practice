@@ -1,7 +1,10 @@
 [workspace]
 
-members=[
+members = [
     "db",
     "parctice",
-    "mysql_t"
+    "mysql_t",
+    "ws_t",
+    "sqlx_t",
+    "echo-server"
 ]
