@@ -1,10 +1,7 @@
 [workspace]
 
 members = [
-    "db",
     "parctice",
-    "mysql_t",
-    "ws_t",
-    "sqlx_t",
-    "echo-server"
+    "echo-server",
+    "async_t"
 ]
