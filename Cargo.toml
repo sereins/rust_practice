@@ -1,7 +1,7 @@
 [workspace]
-
+resolver = "2"
 members = [
     "parctice",
-    "echo-server",
-    "async_t"
+    "async_t",
+    "tokio-tls-test"
 ]
