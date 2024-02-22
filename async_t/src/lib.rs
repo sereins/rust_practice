@@ -4,7 +4,6 @@ use crate::executor::{Executor, Spawner};
 
 pub mod time_futures;
 pub mod executor;
-pub mod self_ref;
 
 /// 创建一个执行器以及任务生成器
 fn new_executor_and_spawner() -> (Executor, Spawner) {
