@@ -21,7 +21,7 @@ async fn main()->io::Result<()> {
     let addr = SocketAddr::from(([127,0,0,1],8099));
     let listener = TcpListener::bind(&addr).await?;
 
-    let acceptor = init("pixiv.net.crt", "pixiv.net.key")?;
+    let acceptor = init("server.crt", "server.key")?;
 
     loop {
 
