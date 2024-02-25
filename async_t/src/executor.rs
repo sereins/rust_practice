@@ -23,6 +23,22 @@ pub struct Spawner {
     pub task_sender: SyncSender<Arc<Task>>,
 }
 
+impl Spawner {
+    pub fn spawn(&self, future: impl Future<Output=()> + 'static + Send) {
+        let future = future.boxed();
+        let task = Arc::new(Task {
+            future: Mutex::new(Some(future)),
+            task_sender: self.task_sender.clone(),
+        });
+
+        println!(
+            "[{:?}] 将Future组成Task,.放入channel",
+            thread::current().id()
+        );
+        self.task_sender.send(task).expect("任务队列已满");
+    }
+}
+
 /// 一个Future，它可以调度自己(将自己放入任务通道中)，然后等待执行器去`poll`
 pub struct Task {
     /// 进行中的Future，在未来的某个时间点会被完成
@@ -46,22 +62,6 @@ impl ArcWake for Task {
             .task_sender
             .send(cloned)
             .expect("任务队列已满");
-    }
-}
-
-impl Spawner {
-    pub fn spawn(&self, future: impl Future<Output=()> + 'static + Send) {
-        let future = future.boxed();
-        let task = Arc::new(Task {
-            future: Mutex::new(Some(future)),
-            task_sender: self.task_sender.clone(),
-        });
-
-        println!(
-            "[{:?}] 将Future组成Task,.放入channel",
-            thread::current().id()
-        );
-        self.task_sender.send(task).expect("任务队列已满");
     }
 }
 

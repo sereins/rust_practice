@@ -29,7 +29,7 @@ mod tests{
         spawner.spawn(async {
             println!("[{:?}]howdy!",thread::current().id());
             // 创建定时器Future，并等待它完成
-            TimerFuture::new(Duration::new(2, 0)).await;
+            TimerFuture::new(Duration::new(10, 0)).await;
             println!("[{:?}]done!",thread::current().id());
         });
 
