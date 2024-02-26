@@ -1,50 +1,39 @@
 use std::io;
-use std::net::ToSocketAddrs;
+use std::net::{SocketAddr};
 use std::path::Path;
 use std::sync::Arc;
 use tokio::io::{AsyncWriteExt, ReadHalf, split, WriteHalf};
 use tokio::net::TcpStream;
-use tokio_rustls::rustls::{ClientConfig, RootCertStore};
+use tokio_rustls::rustls::{ClientConfig};
 use tokio_rustls::{rustls, TlsConnector};
 use tokio_rustls::client::TlsStream;
-use tokio_tls_test::{load_cert, load_keys};
+use tokio_tls_test::{load_cert, load_keys, load_root_cert, TlsCert};
 
 #[tokio::main]
 async fn main() -> io::Result<()> {
-    let allow_insecure = false;
-
     let sni = "example.com";
-    let dst_addr = "127.0.0.1";
-    let dst_port = 8099;
-    let content = format!("GET / HTTP/1.1\r\nHost: {}\r\n\r\n", sni);
+    let addr = SocketAddr::from(([127, 0, 0, 1], 8099));
 
-    let (mut reader, mut writer) = connect(dst_addr, dst_port, sni, allow_insecure).await?;
+    let tls_cert = TlsCert::new("root.crt", "client.crt", "client.key");
+    let (mut reader, mut writer) = connect(addr, sni, tls_cert).await?;
+
+    let content = "client content";
     writer.write_all(content.as_bytes()).await?;
-
     let mut stdout = tokio::io::stdout();
     tokio::io::copy(&mut reader, &mut stdout).await?;
     Ok(())
 }
 
 async fn connect(
-    dst_addr: &str,
-    dst_port: u16,
+    addr: SocketAddr,
     sni: &str,
-    _allow_insecure: bool,
+    tls_cert: TlsCert,
 ) -> io::Result<(ReadHalf<TlsStream<TcpStream>>, WriteHalf<TlsStream<TcpStream>>)> {
-    let socket_addr = (dst_addr, dst_port)
-        .to_socket_addrs()?
-        .next()
-        .ok_or_else(|| io::Error::from(io::ErrorKind::NotFound))?;
-
-    let mut root_store = RootCertStore::empty();
-    let cert = load_cert(Path::new("root.crt")).unwrap();
-    for core in cert {
-        root_store.add(&core).expect("load cert file");
-    }
-
-    let client_pem = load_cert(Path::new("client.crt")).unwrap();
-    let key = load_keys(Path::new("client.key")).unwrap().pop().unwrap();
+    let root_store = load_root_cert(Path::new(&tls_cert.root_cert_path));
+    let client_pem = load_cert(Path::new(&tls_cert.cert_path))?;
+    let key = load_keys(Path::new(&tls_cert.key_path))?
+        .pop()
+        .unwrap();
 
     let config = ClientConfig::builder()
         .with_safe_defaults()
@@ -52,11 +41,12 @@ async fn connect(
         .with_single_cert(client_pem, key).unwrap();
 
     let connector = TlsConnector::from(Arc::new(config));
-    let stream = TcpStream::connect(&socket_addr).await?;
+    let stream = TcpStream::connect(&addr).await?;
 
     let domain = rustls::ServerName::try_from(sni)
         .map_err(|_| io::Error::new(io::ErrorKind::InvalidInput, "invalid dns name"))?;
 
+    // 感觉本质上是在原有的stream套了一层 tls
     let stream = connector.connect(domain, stream).await?;
 
     Ok(split(stream))
