@@ -59,23 +59,28 @@ async fn handle_stream<IO>(stream: IO) -> io::Result<()>
 {
     let (mut local_reader, mut local_writer) = split(stream);
 
-    let mut head = [0u8; 2048];
-    let n = local_reader.read(&mut head[..]).await?;
-
-    if n == 2048 {
-        return Err(io::Error::new(
-            io::ErrorKind::Other,
-            "Receive a unexpected big size of header!!",
-        ));
+    let mut buffer = [0u8; 2048];
+    loop {
+        let n = local_reader.read(&mut buffer).await?;
+        let res = std::str::from_utf8(&buffer[..n]).unwrap();
+        println!("\r\nReceived message:{}", res);
     }
-    let head_str = std::str::from_utf8(&head[..n])
-        .map_err(|x| io::Error::new(io::ErrorKind::Interrupted, x))?;
-    println!("\r\nReceived request from client: \r\n{}\r\n", head_str);
 
-    let content = "This is server response content";
+    // let mut buffer = [0u8; 2048];
+    // let n = local_reader.read(&mut buffer[..]).await?;
+    // if n == 2048 {
+    //     return Err(io::Error::new(
+    //         io::ErrorKind::Other,
+    //         "Receive a unexpected big size of header!!",
+    //     ));
+    // }
+    // let head_str = std::str::from_utf8(&buffer[..n])
+    //     .map_err(|x| io::Error::new(io::ErrorKind::Interrupted, x))?;
+    // println!("\r\nReceived request from client: \r\n{}\r\n", head_str);
+    //
+    // let content = "This is server response content";
+    // local_writer.write_all(content.as_bytes()).await?;
 
-    // 回复200OK
-    local_writer.write_all(content.as_bytes()).await?;
     local_writer.shutdown().await?;
     Ok(()) as io::Result<()>
 }
