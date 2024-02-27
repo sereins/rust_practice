@@ -3,5 +3,6 @@ resolver = "2"
 members = [
     "parctice",
     "async_t",
-    "tokio-tls-test"
+    "tokio-tls-test",
+    "tokio-test"
 ]

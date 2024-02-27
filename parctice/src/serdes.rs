@@ -10,8 +10,6 @@ enum Cycle {
     Day(u32)
 }
 
-
-
 #[test]
 fn test_cycle() {
     println!("hello world");
