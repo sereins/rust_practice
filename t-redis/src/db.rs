@@ -1,12 +1,10 @@
 use bytes::Bytes;
 use std::{
     collections::{BTreeSet, HashMap},
-    str::Bytes,
     sync::{Arc, Mutex},
-    time::Instant,
 };
 use tokio::{
-    sync::{broadcast, Mutex, Notify},
+    sync::{broadcast, Notify},
     time::{self, Duration, Instant},
 };
 
@@ -28,11 +26,11 @@ struct Shared {
 
 #[derive(Debug)]
 struct State {
-    // key-value 类型的数据
+    // key-value 类型的data
     entries: HashMap<String, Entry>,
 
     // 发布订阅数据
-    pub_sub: HashMap<String, broadcast::Sender<Bytes>>,
+    _pub_sub: HashMap<String, broadcast::Sender<Bytes>>,
 
     // 过期维护
     expirations: BTreeSet<(Instant, String)>,
@@ -70,7 +68,7 @@ impl Db {
         let shared = Arc::new(Shared {
             state: Mutex::new(State {
                 entries: HashMap::new(),
-                pub_sub: HashMap::new(),
+                _pub_sub: HashMap::new(),
                 expirations: BTreeSet::new(),
                 shutdown: false,
             }),
@@ -78,7 +76,7 @@ impl Db {
         });
 
         // 注册过期的任务
-        purge_expired_tasks(shared.clone());
+        tokio::spawn(purge_expired_tasks(shared.clone()));
 
         Db { shared }
     }
@@ -118,7 +116,7 @@ impl Db {
             }
         }
 
-        if let Some(expired_at) = expired_at {
+        if let Some(when) = expired_at {
             state.expirations.insert((when, key));
         }
         drop(state);
@@ -158,7 +156,6 @@ impl Shared {
             state.entries.remove(key);
             state.expirations.remove(&(when, key.clone()));
         }
-
         None
     }
 
@@ -181,7 +178,7 @@ async fn purge_expired_tasks(shared: Arc<Shared>) {
         if let Some(when) = shared.purge_expired_key() {
             tokio::select! {
                 _= time::sleep_until(when) =>{},
-                _= shared.background_task.notified()={}
+                _= shared.background_task.notified()=>{}
             }
         } else {
             shared.background_task.notified().await;

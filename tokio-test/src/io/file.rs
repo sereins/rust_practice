@@ -15,9 +15,10 @@ async fn test_read_line() -> io::Result<()> {
                 println!("buf{}", buf);
                 buf.clear();
             }
-            Err(e) => { println!("error:{:?}", e) }
+            Err(e) => {
+                println!("error:{:?}", e)
+            }
         };
     }
     Ok(())
 }
-
