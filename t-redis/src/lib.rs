@@ -6,13 +6,14 @@ pub use frame::Frame;
 
 pub mod db;
 use db::Db;
+
+pub mod clients;
 pub mod server;
 
 mod parse;
 use parse::{Parse, ParseError};
 
 pub mod shutdown;
-
 use shutdown::Shutdown;
 
 pub mod connection;

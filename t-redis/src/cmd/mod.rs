@@ -1,6 +1,8 @@
 mod get;
 pub use get::Get;
 
+mod set;
+pub use set::Set;
 // mod publish;
 // pub use publish::Publish;
 //
@@ -10,8 +12,8 @@ pub use get::Get;
 // mod subscribe;
 // pub use subscribe::{Subscribe, Unsubscribe};
 //
-// mod ping;
-// pub use ping::Ping;
+mod ping;
+pub use ping::Ping;
 //
 mod unknown;
 pub use unknown::Unknown;
