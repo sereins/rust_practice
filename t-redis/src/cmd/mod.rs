@@ -23,6 +23,7 @@ use crate::{Connection, Db, Frame, Parse, ParseError, Shutdown};
 #[derive(Debug)]
 pub enum Command {
     Get(Get),
+    Ping(Ping),
     Unknown(Unknown),
 }
 
@@ -56,7 +57,7 @@ impl Command {
             // "set" => Command::Set(Set::parse_frames(&mut parse)?),
             // "subscribe" => Command::Subscribe(Subscribe::parse_frames(&mut parse)?),
             // "unsubscribe" => Command::Unsubscribe(Unsubscribe::parse_frames(&mut parse)?),
-            // "ping" => Command::Ping(Ping::parse_frames(&mut parse)?),
+            "ping" => Command::Ping(Ping::parse_frames(&mut parse)?),
             _ => {
                 // The command is not recognized and an Unknown command is
                 // returned.
@@ -94,7 +95,7 @@ impl Command {
             // Publish(cmd) => cmd.apply(db, dst).await,
             // Set(cmd) => cmd.apply(db, dst).await,
             // Subscribe(cmd) => cmd.apply(db, dst, shutdown).await,
-            // Ping(cmd) => cmd.apply(dst).await,
+            Ping(cmd) => cmd.apply(dst).await,
             Unknown(cmd) => cmd.apply(dst).await,
             // // `Unsubscribe` cannot be applied. It may only be received from the
             // // context of a `Subscribe` command.
@@ -106,11 +107,11 @@ impl Command {
     pub(crate) fn get_name(&self) -> &str {
         match self {
             Command::Get(_) => "get",
+            Command::Ping(_) => "ping",
             _ => "unknown", // Command::Publish(_) => "pub",
                             // Command::Set(_) => "set",
                             // Command::Subscribe(_) => "subscribe",
                             // Command::Unsubscribe(_) => "unsubscribe",
-                            // Command::Ping(_) => "ping",
                             // Command::Unknown(cmd) => cmd.get_name(),
         }
     }

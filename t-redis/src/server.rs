@@ -1,11 +1,11 @@
 use std::future::Future;
 use std::{sync::Arc, time::Duration};
-
 use tokio::{
     net::{TcpListener, TcpStream},
     sync::{broadcast, mpsc, Semaphore},
     time,
 };
+use tracing::{error, info};
 
 use crate::{
     connection::Connection,
@@ -121,13 +121,11 @@ pub async fn run(listener: TcpListener, shutdown: impl Future) {
     tokio::select! {
         res = server.run() => {
             if let Err(err) = res {
-                // error!(cause = %err, "failed to accept");
-                println!("err:{:?}",err);
+                error!(cause = %err, "failed to accept");
             }
         }
         _ = shutdown => {
-            // info!("shutting down");
-            println!("shutting down");
+            info!("server shutting down");
         }
     }
 
