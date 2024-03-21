@@ -1,17 +1,101 @@
 use bytes::Bytes;
-use std::env;
+use clap::{Parser, Subcommand};
+use std::convert::Infallible;
+use std::num::ParseIntError;
+use std::{env, str, time::Duration};
 use t_redis::clients::Client;
 use tracing_appender::{non_blocking::WorkerGuard, rolling::Rotation};
 use tracing_subscriber::fmt::writer::MakeWriterExt;
 
+#[derive(Parser, Debug)]
+#[clap(
+    name = "mini-redis-cli",
+    version,
+    author,
+    about = "Issue Redis commands"
+)]
+struct Cli {
+    #[clap(subcommand)]
+    command: Command,
+
+    #[clap(name = "hostname", long, default_value = "127.0.0.1")]
+    host: String,
+
+    #[clap(name = "port", long, default_value = "8888")]
+    port: u16,
+}
+
+#[derive(Subcommand, Debug)]
+enum Command {
+    Ping {
+        msg: Option<Bytes>,
+    },
+    Get {
+        key: String,
+    },
+    Set {
+        key: String,
+
+        #[clap(value_parser = bytes_from_str)]
+        value: Bytes,
+
+        #[clap(value_parser = duration_from_ms_str)]
+        expires: Option<Duration>,
+    },
+}
+
 #[tokio::main]
-async fn main() {
+async fn main() -> t_redis::Result<()> {
     let _guard = init_log();
-    let mut client = Client::connect("127.0.0.1:8888").await.unwrap();
 
-    let rs = client.ping(Some(Bytes::from("Ping".as_bytes()))).await;
+    let cli = Cli::parse();
 
-    println!("ping return {:?}", rs);
+    let addr = format!("{}:{}", cli.host, cli.port);
+    let mut client = Client::connect(addr).await.unwrap();
+
+    match cli.command {
+        Command::Ping { msg } => {
+            let value = client.ping(msg).await?;
+            if let Ok(str) = str::from_utf8(&value) {
+                println!("\"{}\"", str);
+            } else {
+                println!("{:?}", value);
+            }
+        }
+        Command::Get { key } => {
+            let value = client.get(&key).await?;
+            match value {
+                Some(bytes) => {
+                    if let Ok(str) = str::from_utf8(&bytes) {
+                        println!("\"{}\"", str);
+                    } else {
+                        println!("{:?}", bytes);
+                    }
+                }
+                None => {
+                    println!("{:?}", value);
+                }
+            }
+        }
+        Command::Set {
+            key,
+            value,
+            expires: None,
+        } => {
+            let _rs = client.set(&key, value).await;
+            println!("OK");
+        }
+        Command::Set {
+            key,
+            value,
+            expires: Some(expires),
+        } => {
+            client.set_expires(&key, value, expires).await?;
+            println!("OK");
+        }
+    }
+
+    Ok(())
 }
 
 fn init_log() -> Option<WorkerGuard> {
@@ -39,4 +123,13 @@ fn init_log() -> Option<WorkerGuard> {
         subscriber.with_writer(stdout).init();
         None
     }
+}
+
+fn duration_from_ms_str(src: &str) -> Result<Duration, ParseIntError> {
+    let ms = src.parse::<u64>()?;
+    Ok(Duration::from_millis(ms))
+}
+
+fn bytes_from_str(src: &str) -> Result<Bytes, Infallible> {
+    Ok(Bytes::from(src.to_string()))
 }
