@@ -1,8 +1,8 @@
+use rustls_pemfile::{certs, pkcs8_private_keys};
 use std::fs::File;
 use std::io;
 use std::io::BufReader;
 use std::path::Path;
-use rustls_pemfile::{certs, pkcs8_private_keys};
 use tokio_rustls::rustls::{Certificate, PrivateKey, RootCertStore};
 
 // 证书的配置
@@ -47,3 +47,4 @@ pub fn load_root_cert(path: &Path) -> RootCertStore {
     }
     root_store
 }
+

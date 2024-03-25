@@ -1,12 +1,11 @@
 use std::io;
 use std::net::SocketAddr;
 use std::path::Path;
-use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt, split};
+use tokio::io::{split, AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt};
 use tokio::net::TcpListener;
 use tokio_rustls::rustls::server::AllowAnyAuthenticatedClient;
 use tokio_rustls::TlsAcceptor;
 use tokio_tls_test::{load_cert, load_keys, load_root_cert, TlsCert};
-
 
 #[tokio::main]
 async fn main() -> io::Result<()> {
@@ -30,10 +29,12 @@ async fn main() -> io::Result<()> {
                             }
                         });
                     }
-                    Err(err) => { eprintln!("Tcp0 err :{:?}", err) }
+                    Err(err) => {
+                        eprintln!("Tcp0 err :{:?}", err)
+                    }
                 }
             }
-            Err(err) => eprintln!("Tcp err :{:?}", err)
+            Err(err) => eprintln!("Tcp err :{:?}", err),
         }
     }
 }
@@ -55,31 +56,32 @@ fn tls_acceptor(tls_cert: TlsCert) -> io::Result<TlsAcceptor> {
 }
 
 async fn handle_stream<IO>(stream: IO) -> io::Result<()>
-    where IO: AsyncRead + AsyncWrite + Unpin + AsyncWriteExt
+where
+    IO: AsyncRead + AsyncWrite + Unpin + AsyncWriteExt,
 {
     let (mut local_reader, mut local_writer) = split(stream);
 
-    let mut buffer = [0u8; 2048];
-    loop {
-        let n = local_reader.read(&mut buffer).await?;
-        let res = std::str::from_utf8(&buffer[..n]).unwrap();
-        println!("\r\nReceived message:{}", res);
-    }
-
     // let mut buffer = [0u8; 2048];
-    // let n = local_reader.read(&mut buffer[..]).await?;
-    // if n == 2048 {
-    //     return Err(io::Error::new(
-    //         io::ErrorKind::Other,
-    //         "Receive a unexpected big size of header!!",
-    //     ));
+    // loop {
+    //     let n = local_reader.read(&mut buffer).await?;
+    //     let res = std::str::from_utf8(&buffer[..n]).unwrap();
+    //     println!("\r\nReceived message:{}", res);
     // }
-    // let head_str = std::str::from_utf8(&buffer[..n])
-    //     .map_err(|x| io::Error::new(io::ErrorKind::Interrupted, x))?;
-    // println!("\r\nReceived request from client: \r\n{}\r\n", head_str);
-    //
-    // let content = "This is server response content";
-    // local_writer.write_all(content.as_bytes()).await?;
+
+    let mut buffer = [0u8; 2048];
+    let n = local_reader.read(&mut buffer[..]).await?;
+    if n == 2048 {
+        return Err(io::Error::new(
+            io::ErrorKind::Other,
+            "Receive a unexpected big size of header!!",
+        ));
+    }
+    let head_str = std::str::from_utf8(&buffer[..n])
+        .map_err(|x| io::Error::new(io::ErrorKind::Interrupted, x))?;
+    println!("\r\nReceived request from client: \r\n{}\r\n", head_str);
+
+    let content = "This is server response content";
+    local_writer.write_all(content.as_bytes()).await?;
 
     local_writer.shutdown().await?;
     Ok(()) as io::Result<()>

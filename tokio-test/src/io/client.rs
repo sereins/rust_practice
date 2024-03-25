@@ -1,8 +1,8 @@
-use tokio::{io};
-use tokio::io::{AsyncBufReadExt, AsyncReadExt, AsyncWriteExt, BufReader};
+use tokio::io;
+use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 use tokio::net::TcpStream;
 
-async fn connect() -> io::Result<()> {
+pub async fn connect() -> io::Result<()> {
     let connect = TcpStream::connect("127.0.0.1:8888").await?;
 
     let (read_half, mut write_half) = connect.into_split();
@@ -19,7 +19,9 @@ async fn connect() -> io::Result<()> {
                 eprintln!("读取错误{:?}", e);
                 break;
             }
-            Ok(0) => { break; }
+            Ok(0) => {
+                break;
+            }
             Ok(_n) => {
                 buf.pop();
                 let content = buf.drain(..).as_str().to_string();
@@ -37,6 +39,6 @@ mod tests {
 
     #[tokio::test]
     async fn test_connect() {
-        let c = connect().await.unwrap();
+        let _c = connect().await.unwrap();
     }
 }

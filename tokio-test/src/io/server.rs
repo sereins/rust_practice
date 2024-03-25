@@ -1,11 +1,10 @@
-use std::time::Duration;
 use tokio::io;
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt};
-use tokio::net::{TcpListener, TcpStream};
 use tokio::net::tcp::{OwnedReadHalf, OwnedWriteHalf};
+use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::mpsc;
 
-async fn server() -> io::Result<()> {
+pub async fn server() -> io::Result<()> {
     let server = TcpListener::bind(("127.0.0.1", 8888_u16)).await?;
 
     while let Ok((stream, socket)) = server.accept().await {
@@ -13,11 +12,11 @@ async fn server() -> io::Result<()> {
         tokio::spawn(async move {
             process_connect(stream).await;
         });
-    };
+    }
     Ok(())
 }
 
-async fn process_connect(stream: TcpStream) {
+pub async fn process_connect(stream: TcpStream) {
     let (client_reader, client_writer) = stream.into_split();
     let (msg_tx, msg_rx) = mpsc::channel::<String>(100);
 
@@ -40,7 +39,7 @@ async fn process_connect(stream: TcpStream) {
 }
 
 /// 从客户端读取
-async fn read_from_client(reader: OwnedReadHalf, msg_tx: mpsc::Sender<String>) {
+pub async fn read_from_client(reader: OwnedReadHalf, msg_tx: mpsc::Sender<String>) {
     let mut buf_reader = io::BufReader::new(reader);
     let mut buf = String::new();
     loop {

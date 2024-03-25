@@ -59,10 +59,16 @@ impl TimerFuture {
             // 通知执行器定时器已经完成，可以继续`poll`对应的`Future`了
             shared_state.completed = true;
             if let Some(waker) = shared_state.waker.take() {
-                println!("[{:?}] TimerFuture 新线程获得waker,并执行wake()", thread::current().id());
+                println!(
+                    "[{:?}] TimerFuture 新线程获得waker,并执行wake()",
+                    thread::current().id()
+                );
                 waker.wake()
             } else {
-                println!("[{:?}] TimerFuture 新线没有获得waker", thread::current().id());
+                println!(
+                    "[{:?}] TimerFuture 新线没有获得waker",
+                    thread::current().id()
+                );
             }
         });
 
@@ -70,3 +76,4 @@ impl TimerFuture {
         TimerFuture { shared_state }
     }
 }
+
