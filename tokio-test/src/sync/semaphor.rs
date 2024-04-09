@@ -6,6 +6,7 @@ mod test {
 
     #[tokio::test]
     async fn semaphor() {
+        // 信号通知机制
         let semaphor = Arc::new(Semaphore::new(3));
 
         let _permit1 = semaphor.acquire().await.unwrap();
