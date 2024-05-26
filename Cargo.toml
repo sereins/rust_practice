@@ -5,4 +5,4 @@ members = [
     "async_t",
     "tokio-tls-test",
     "tokio-test"
-, "t-redis"]
+, "t-redis", "error-t"]
