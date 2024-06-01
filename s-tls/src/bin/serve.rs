@@ -1,3 +1,4 @@
+use s_tls::{load_cert, load_keys, load_root_cert, TlsCert};
 use std::io;
 use std::net::SocketAddr;
 use std::path::Path;
@@ -5,7 +6,6 @@ use tokio::io::{split, AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt};
 use tokio::net::TcpListener;
 use tokio_rustls::rustls::server::AllowAnyAuthenticatedClient;
 use tokio_rustls::TlsAcceptor;
-use tokio_tls_test::{load_cert, load_keys, load_root_cert, TlsCert};
 
 #[tokio::main]
 async fn main() -> io::Result<()> {

@@ -4,6 +4,7 @@ use thiserror::Error;
 /// summary
 /// #[error] 宏:本质作用是为字段实现display 特征。
 /// #[from io::Error] 宏:本质上是是自动实现From特征，从一个类型转换为另一个类型。
+///
 /// anyhow:anyhow::Result可以兼容任何实现了std::error::Error类型的。方便与其他库做交互。
 /// anyhow:可以将实现了std::error::Error类型的错误转化为anyhow::Error,实现了From特征。
 
@@ -20,7 +21,7 @@ pub struct Limits {
     lo: i16,
     hi: i16,
 }
-
+#[allow(dead_code)]
 #[derive(Error, Debug)]
 pub enum TheError {
     #[error("invalid rdo_lookahead_frames {0} (expected < {})", i32::MAX)]
@@ -39,9 +40,8 @@ pub enum ErrorFrom {
 
 #[cfg(test)]
 mod test {
-    use anyhow::anyhow;
-
     use super::*;
+    use anyhow::anyhow;
     use std::error::Error;
 
     #[test]
@@ -62,7 +62,7 @@ mod test {
 
     #[test]
     fn test_from() {
-        let error1 = ErrorFrom::from(io::Error::new(io::ErrorKind::AddrNotAvailable, "not tuse"));
+        let error1 = ErrorFrom::from(io::Error::new(io::ErrorKind::AddrNotAvailable, "not use"));
         println!("error1 = {}", error1);
         println!("source = {:?}", error1.source());
 

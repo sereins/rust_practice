@@ -1,5 +1,5 @@
 [package]
-name = "tokio-tls-test"
+name = "s-tls"
 version = "0.1.0"
 edition = "2021"
 
@@ -17,7 +17,7 @@ lazy_static = "1.4.0"
 # 用于异步
 tokio = { version = "1", features = ["full"] }
 # 用于tls
-tokio-rustls = { version = "0.23.4",features = ["dangerous_configuration"]}
+tokio-rustls = { version = "0.23.4", features = ["dangerous_configuration"] }
 webpki-roots = "0.22"
 # 用于正则
 regex = "1.5.4"

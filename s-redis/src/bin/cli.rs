@@ -1,9 +1,9 @@
 use bytes::Bytes;
 use clap::{Parser, Subcommand};
+use s_redis::clients::Client;
 use std::convert::Infallible;
 use std::num::ParseIntError;
 use std::{env, str, time::Duration};
-use t_redis::clients::Client;
 use tracing_appender::{non_blocking::WorkerGuard, rolling::Rotation};
 use tracing_subscriber::fmt::writer::MakeWriterExt;
 
@@ -45,7 +45,7 @@ enum Command {
 }
 
 #[tokio::main]
-async fn main() -> t_redis::Result<()> {
+async fn main() -> s_redis::Result<()> {
     let _guard = init_log();
 
     let cli = Cli::parse();

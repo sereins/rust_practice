@@ -1,6 +1,6 @@
 use tokio::{net::TcpListener, signal};
 
-use t_redis::{server, Result};
+use s_redis::{server, Result};
 #[tokio::main]
 pub async fn main() -> crate::Result<()> {
     println!("server start");
