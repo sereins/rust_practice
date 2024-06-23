@@ -1,8 +1,7 @@
-use std::fmt::Debug;
-
 use crate::{errors::TransportError, request_builder::ReqBuilder};
 use reqwest::header::{self, HeaderMap};
 use serde::Serialize;
+use std::fmt::Debug;
 
 pub struct RpcClient {
     base_url: String,

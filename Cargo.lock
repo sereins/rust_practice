@@ -2407,9 +2407,12 @@ version = "0.1.0"
 dependencies = [
  "alloy",
  "reqwest",
+ "s-tools",
+ "s-transport",
  "serde",
  "serde_json",
  "tokio",
+ "tracing",
 ]
 
 [[package]]
@@ -2476,6 +2479,8 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "thiserror",
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]
@@ -2483,12 +2488,12 @@ name = "s-transport"
 version = "0.1.0"
 dependencies = [
  "reqwest",
+ "s-tools",
  "serde",
  "serde_json",
  "thiserror",
  "tokio",
  "tracing",
- "tracing-subscriber",
 ]
 
 [[package]]

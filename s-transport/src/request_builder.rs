@@ -12,7 +12,7 @@ impl ReqBuilder {
         self
     }
 
-    pub async fn send<T: DeserializeOwned>(self) -> Result<T, crate::errors::TransportError> {
+    pub async fn send<T: DeserializeOwned>(self) -> Result<String, crate::errors::TransportError> {
         let res = self
             .0
             .send()
@@ -21,8 +21,9 @@ impl ReqBuilder {
 
         let response_str = res.text().await.map_err(|e| TransportError::ReqError(e))?;
 
-        tracing::info!("response: {}", response_str);
-        serde_json::from_str::<T>(&response_str).map_err(|e| TransportError::SerdeError(e))
+        Ok(response_str)
+        // tracing::info!("response: {}", response_str);
+        // serde_json::from_str::<T>(&response_str).map_err(|e| TransportError::SerdeError(e))
         // res.json::<T>()
         //     .await
         //     .map_err(|e| TransportError::ReqError(e))

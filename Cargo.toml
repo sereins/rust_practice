@@ -1,3 +1,18 @@
 [workspace]
 resolver = "2"
-members = [ "s-chain","s-crypto","s-redis", "s-runtime", "s-std", "s-tls", "s-tokio", "s-tools", "s-transport"]
+members = [
+    "s-chain",
+    "s-crypto",
+    "s-redis",
+    "s-runtime",
+    "s-std",
+    "s-tls",
+    "s-tokio",
+    "s-tools",
+    "s-transport",
+]
+
+
+[workspace.dependencies]
+tracing = "0.1"
+tracing-subscriber = "0.3"
