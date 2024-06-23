@@ -6,7 +6,7 @@
 mod tests {
     #[test]
     fn test_decode() {
-        let str = "2e8b5599ed26d8b465d66049c42df32df744baf4bcf18f777d2daf6b28e06e5b";
+        let str = "2e8b5599ed26d8b465d66049c42df32df744baf4bcf18f777d2daf6b28e06e5b   ";
         let bytes = hex::decode(str).unwrap();
 
         // 两个16进制数占用了1个字节
