@@ -14,3 +14,10 @@ serde_json = "1.0"
 tracing = { workspace = true }
 s-tools = { path = "../s-tools" }
 s-transport = { path = "../s-transport" }
+
+
+secp256k1 = { version = "*", features = ["rand-std", "recovery"] }
+sha3 = "0.10.8"
+hex = "0.4.3"
+sha2 = "0.10.8"
+bs58 = { version = "*", features = ["check"] }
