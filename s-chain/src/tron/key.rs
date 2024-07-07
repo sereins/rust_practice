@@ -1,6 +1,6 @@
 use secp256k1::{rand, Keypair, Secp256k1, SecretKey};
 
-pub(super) fn generate_private_key() -> SecretKey {
+pub fn generate_private_key() -> SecretKey {
     let secp = Secp256k1::new();
     let keypair = Keypair::new(&secp, &mut rand::thread_rng());
     let key = keypair.secret_key();
@@ -14,12 +14,12 @@ mod tests {
     #[test]
     fn test() {
         let secp = super::Secp256k1::new();
-        let secrekey = super::generate_private_key();
-        let pubkcy = secrekey.public_key(&secp);
-        println!("public key = {:?}", pubkcy);
+        let sk = super::generate_private_key();
+        let pk = sk.public_key(&secp);
+        println!("public key = {:?}", pk);
 
         let mut hasher = Keccak256::new();
-        hasher.update(pubkcy.to_string());
+        hasher.update(pk.to_string());
 
         let result = hasher.finalize();
 

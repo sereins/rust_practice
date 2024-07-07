@@ -1,2 +1,2 @@
 mod address;
-mod key;
+pub mod key;

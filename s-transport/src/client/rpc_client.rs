@@ -18,7 +18,7 @@ impl RpcClient {
         let client = reqwest::ClientBuilder::new()
             .default_headers(headers)
             .build()
-            .map_err(|e| TransportError::ReqError(e))?;
+            .map_err(TransportError::ReqError)?;
 
         Ok(Self {
             base_url: base_url.to_owned(),

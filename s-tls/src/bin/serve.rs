@@ -12,7 +12,11 @@ async fn main() -> io::Result<()> {
     let addr = SocketAddr::from(([127, 0, 0, 1], 8099));
     let listener = TcpListener::bind(&addr).await?;
 
-    let tls_cert = TlsCert::new("root.crt", "server.crt", "server.key");
+    let tls_cert = TlsCert::new(
+        "s-tls/root.crt.pem",
+        "s-tls/server.crt.pem",
+        "s-tls/server.key.pem",
+    );
     let acceptor = tls_acceptor(tls_cert)?;
 
     loop {

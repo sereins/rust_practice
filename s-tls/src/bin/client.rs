@@ -14,7 +14,12 @@ async fn main() -> io::Result<()> {
     let sni = "example.com";
     let addr = SocketAddr::from(([127, 0, 0, 1], 8099));
 
-    let tls_cert = TlsCert::new("root.crt", "client.crt", "client.key");
+    let tls_cert = TlsCert::new(
+        "s-tls/root.crt.pem",
+        "s-tls/client.crt.pem",
+        "s-tls/client.key.pem",
+    );
+
     let (mut reader, mut writer) = connect(addr, sni, tls_cert).await?;
 
     let content = "client content";
