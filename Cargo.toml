@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
-    "s-chain",
+    "s-chain", "s-codec",
     "s-crypto",
     "s-redis",
     "s-runtime",
