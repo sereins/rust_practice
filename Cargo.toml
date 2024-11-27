@@ -8,7 +8,7 @@ members = [
     "s-std",
     "s-tls",
     "s-tokio",
-    "s-tools",
+    "s-tools", "s-tracing",
     "s-transport",
 ]
 

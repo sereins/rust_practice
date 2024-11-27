@@ -5,60 +5,58 @@
 /// 6. take 获取Option里面的值
 /// 6. unwrap---unwrap_err unwrap_or--unwrap_or_default---unwrap_or_else
 #[cfg(test)]
-mod tests{
+mod tests {
     #[test]
-    fn test_and(){
-        let a:Option<i32> = Some(3);
-        let b:Option<i32> = None;
+    fn test_and() {
+        let a: Option<i32> = Some(3);
+        let b: Option<i32> = None;
 
         let c = a.and(b);
-        println!("{:?}",c);
+        println!("{:?}", c);
 
-        let a:Option<i32> = Some(3);
-        let d  = a.and_then(|t|Some(t * 3));
-        println!("{:?}",d)
+        let a: Option<i32> = Some(3);
+        let d = a.and_then(|t| Some(t * 3));
+        println!("{:?}", d)
     }
 
     /// 如果是None进行处理
     #[test]
-    fn test_or(){
-        let a:Option<i32> = Some(3);
-        let b:Option<i32> = None;
+    fn test_or() {
+        let a: Option<i32> = Some(3);
+        let b: Option<i32> = None;
 
         let c = a.or(b);
-        println!("{:?}",c);
+        println!("{:?}", c);
 
-        let a:Option<i32> = Some(3);
-        let d  = a.or_else(||Some(3));
-        println!("{:?}",d)
+        let a: Option<i32> = Some(3);
+        let d = a.or_else(|| Some(3));
+        println!("{:?}", d)
     }
 
     /// 对值或者错误的进一步处理，返回结果还是Option类型
     #[test]
-    fn test_map(){
-        let a:Option<i32> = Some(3);
-        let c = a.map(|t|t * 2);
-        println!("{:?}",c);
+    fn test_map() {
+        let a: Option<i32> = Some(3);
+        let c = a.map(|t| t * 2);
+        println!("{:?}", c);
     }
 
     /// 对值进一步处理，返回值是解开result后得值
     #[test]
-    fn test_map_or(){
-        let a:Option<i32> = Some(3);
-        let b = a.map_or(0,|x|{
-            x * 2
-        });
-        println!("map_or result:{:?}",b);
+    fn test_map_or() {
+        let a: Option<i32> = Some(3);
+        let b = a.map_or(0, |x| x * 2);
+        println!("map_or result:{:?}", b);
 
-        let c  = a.map_or_else(|| 2,|t| t * 2);
-        println!("map_or_else result:{:?}",c);
+        let c = a.map_or_else(|| 2, |t| t * 2);
+        println!("map_or_else result:{:?}", c);
     }
 
     /// 对值的拆开处理,但是回引发panic
     #[test]
-    fn test_wrap(){
-        let a:Option<i32> = Some(3);
+    fn test_wrap() {
+        let a: Option<i32> = Some(3);
         let c = a.unwrap();
-        println!("unwrap value:{:?}",c);
+        println!("unwrap value:{:?}", c);
     }
 }

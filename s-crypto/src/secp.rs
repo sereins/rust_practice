@@ -13,7 +13,8 @@
 mod tests {
     use secp256k1::hashes::{sha256, Hash};
     use secp256k1::rand::rngs::OsRng;
-    use secp256k1::{Message, Secp256k1};
+    use secp256k1::{Message, Secp256k1, SecretKey};
+    use std::str::FromStr;
 
     #[test]
     fn test_generate() {
@@ -26,6 +27,7 @@ mod tests {
             public_key.to_string(),
             public_key.to_string().len()
         );
+        println!("a:{:?}", a);
     }
 
     #[test]
